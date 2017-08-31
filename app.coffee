@@ -1,7 +1,7 @@
 import { h, render, Component } from 'preact'
 
-WIDTH     = 50
-HEIGHT    = 50
+WIDTH     = 80
+HEIGHT    = 80
 GRID_SIZE = 10
 
 getRandomGrid = ->
@@ -11,15 +11,35 @@ getRandomGrid = ->
 
 grid = getRandomGrid()
 
+styles = "
+.row {
+  line-height: 0;
+}
+
+.cell {
+  display: inline-block;
+  width: #{GRID_SIZE}px;
+  height: #{GRID_SIZE}px;
+}
+
+.alive {
+  background-color: #3F6;
+}
+"
+
 Cell = ({on: value}) ->
-  h "span", className: "cell",
-    if value then "X" else "..."
+  className = "cell"
+  className += " alive" if value
+  h "span", className: className
 
 App = =>
-  h "div", className: "grid",
-    for row in grid
-      h "div", className: "row",
-        for value in row
-          h Cell, on: value
+  h "div", null,
+    h "style", type: "text/css", styles
+
+    h "div", className: "grid",
+      for row in grid
+        h "div", className: "row",
+          for value in row
+            h Cell, on: value
 
 render h(App), document.body
