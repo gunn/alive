@@ -3,6 +3,7 @@ import { h, render, Component } from 'preact'
 WIDTH     = 80
 HEIGHT    = 120
 GRID_SIZE = 10
+PADDING   = 8
 
 class Cell
   constructor: (@alive) ->
@@ -47,18 +48,25 @@ for x in [0..WIDTH-1]
           cell.neighbours.push cellFor(coords...)
 
 styles = "
-.row {
+.alive-grid {
+  background-color: #FFF;
+  padding: #{PADDING}px;
+  width: #{HEIGHT*GRID_SIZE + PADDING*2}px;
+  height: #{WIDTH*GRID_SIZE + PADDING*2}px;
+}
+
+.alive-row {
   line-height: 0;
 }
 
-.cell {
+.alive-cell {
   display: inline-block;
   width: #{GRID_SIZE}px;
   height: #{GRID_SIZE}px;
 }
 
 .alive {
-  background-color: #3F6;
+  background-color: #a8d46f;
 }
 "
 
@@ -79,10 +87,15 @@ runTick = ->
     cell.alive = cell.keepAlive
 
 
-Square = ({alive}) ->
-  className = "cell"
-  className += " alive" if alive
-  h "span", className: className
+class Square extends Component
+  shouldComponentUpdate: ({alive})->
+    alive != @props.alive
+  
+  render: ->
+    className = "alive-cell"
+    className += " alive" if @props.alive
+    h "span", className: className
+
 
 class Grid extends Component
   constructor: ->
@@ -91,18 +104,23 @@ class Grid extends Component
   
   componentDidMount: ->
     reRender = =>
+      return if this.unmounted
+
       @setState time: Date.now
       runTick()
-      # window.requestAnimationFrame
-      window.requestAnimationFrame reRender, 500
+      window.requestAnimationFrame reRender
     reRender()
 
+  componentWillUnmount: ->
+    this.unmounted = true
+
   render: ->
-    h "div", className: "grid",
+    h "div", className: "alive-grid",
       for row in grid
-        h "div", className: "row",
-          for cell in row
-            h Square, {alive: cell.alive}
+        h "div", className: "alive-row",
+          for cell, i in row
+            h Square, alive: cell.alive, key: i
+
 
 App = =>
   h "div", null,
