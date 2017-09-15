@@ -35,7 +35,6 @@ wrapXY = (x, y)->
 
   [wx, wy]
 
-cellFor = (x, y)-> grid[x][y]
 
 for x in [0..WIDTH-1]
   for y in [0..HEIGHT-1]
@@ -44,8 +43,9 @@ for x in [0..WIDTH-1]
     for dx in [-1..+1]
       for dy in [-1..+1]
         unless dx==0 && dy==0
-          coords = wrapXY(x+dx, y+dy)
-          cell.neighbours.push cellFor(coords...)
+          [cx, cy] = wrapXY(x+dx, y+dy)
+          cell.neighbours.push grid[cx][cy]
+
 
 styles = "
 .alive-grid {
