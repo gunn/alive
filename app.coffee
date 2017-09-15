@@ -62,15 +62,18 @@ styles = "
 }
 "
 
+ruleTable = [
+  # x = number of alive neighbours
+  [0, 0, 0, 1, 0, 0, 0, 0, 0], #dead
+  [0, 0, 1, 1, 0, 0, 0, 0, 0]  #alive
+]
+
 
 runTick = ->
   for cell in cells
     count = cell.neighbours.filter(({alive})=> alive).length
 
-    cell.keepAlive = if cell.alive
-      count==2 || count==3
-    else
-      count==3
+    cell.keepAlive = Math.random() < ruleTable[~~cell.alive][count]
   
   for cell in cells
     cell.alive = cell.keepAlive
